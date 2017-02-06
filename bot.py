@@ -2,7 +2,8 @@ import telebot
 from jinja2 import Template
 from os import getenv
 
-from models import catalog
+from models import Price
+from server import session
 
 TOKEN = getenv('BOT_TOKEN')
 if not TOKEN:
@@ -16,13 +17,19 @@ with open('templates/catalog.md', 'r') as catalog_file:
 with open('templates/greetings.md', 'r') as greetings_file:
     greetings_tmpl = Template(greetings_file.read())
 
+
 @bot.message_handler(commands=['start'])
 def greet(message):
     bot.send_message(message.chat.id, greetings_tmpl.render())
 
+
 @bot.message_handler(commands=['menu'])
 def show_catalog(message):
-    bot.send_message(message.chat.id, catalog_tmpl.render(catalog=catalog), parse_mode='Markdown')
+    pizza_catalog = session.query(Price).all()
+    bot.send_message(message.chat.id,
+                     catalog_tmpl.render(catalog=pizza_catalog),
+                     parse_mode='Markdown')
+
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
