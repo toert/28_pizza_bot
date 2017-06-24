@@ -4,8 +4,8 @@ from flask import Flask, Response, request
 from sqlalchemy import create_engine
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import Pizza, Price
-from update_db import create_session
+from models import Pizza, PizzaChoice
+from fill_db import create_session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
@@ -39,7 +39,7 @@ class PizzaView(AuthView):
     form_columns = ('title', 'description')
 
 
-class PriceView(AuthView):
+class ChoiceView(AuthView):
     column_display_pk = True
     column_hide_backrefs = False
     column_exclude_list = ['choices', 'id']
@@ -48,5 +48,5 @@ class PriceView(AuthView):
 
 if __name__ == '__main__':
     admin.add_view(PizzaView(Pizza, session))
-    admin.add_view(PriceView(Price, session))
-    app.run(debug=True)
+    admin.add_view(ChoiceView(PizzaChoice, session))
+    app.run()
